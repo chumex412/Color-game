@@ -108,6 +108,7 @@ button .reset,
 .message,
 .nav-btn {
   display: block;
+  margin: 0.5rem;
 }
 
 .reset:focus {
