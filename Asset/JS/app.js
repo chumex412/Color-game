@@ -1,8 +1,8 @@
 let max = 255;
 let numBoxes = 6;
-let color = getRandomColor(numBoxes);
-let numGuess = 3
+let numGuess = 3;
 let guessLeft = numGuess;
+let color = getRandomColor(numBoxes);
 let guess = pickColor();
 
 // UI Elements
@@ -10,6 +10,7 @@ const wrapper = document.querySelector('.wrapper'),
       navButton = document.querySelector('.nav'),
       reset = document.querySelector('.reset'),
       boxes = document.querySelectorAll('.box'),
+      gameMode = document.querySelectorAll('.mode'),
       easy = document.querySelector('.easy'),
       hard = document.querySelector('.hard'),
       bgValue = document.querySelector('.bg-value'),
@@ -21,7 +22,12 @@ changeColor();
 //Assigning random colors to each boxes
 function changeColor()  {
   for(let i = 0; i < boxes.length; i++) {
-    boxes[i].style.backgroundColor = color[i];
+    if(color[i]) {
+      boxes[i].style.display = 'block';
+      boxes[i].style.backgroundColor = color[i];
+    } else {
+      boxes[i].style.display = 'none';
+    }
   }
 
   bgValue.textContent = guess.toUpperCase();
@@ -45,10 +51,15 @@ function setColorChange(e) {
   if (target.style.backgroundColor === guess) {
     // Gameover, you won
     gameOver(true, 'Correct!');
-
   } else { // what to do when guess is wrong
-    gameOver(false, 'Try again!');
-    target.style.backgroundColor = 'rgb(17, 18, 23)';
+    guessLeft -= 1;
+    if (guessLeft === 0) {
+      gameOver(false, 'Try again!');
+      handleLoss();
+    } else {
+      showMessage(`You ${guessLeft} trials left`, 'red');
+      target.style.backgroundColor = 'rgb(17, 18, 23)';
+    }
   }
 }
 
@@ -61,8 +72,9 @@ function gameOver(won, msg) {
   } else {// if Lost what happen
     color = 'red';
   }
-  showMessage(msg, color)
-  
+  // Change the text of the reset button
+  reset.textContent = 'Play Again?';
+  showMessage(msg, color);
 }
 
 function gameWon() {
@@ -72,8 +84,12 @@ function gameWon() {
   });
   // Replace the background of the header with correct color
   header.style.backgroundColor = guess;
-  reset.textContent = 'Play Again?';
-  // Change the text of the reset button
+}
+
+function handleLoss() {
+  boxes.forEach(box => {
+    box.style.display = 'none';
+  })
 }
 
 function showMessage(msg, color) {
@@ -102,6 +118,7 @@ function getRandomColor(num) {
 }
 
 function generateRandomColors() {
+  // Assign random numbers 0-255 to rgb variables
   let red = Math.floor(Math.random() * (max + 1)),
       green = Math.floor(Math.random() * (max + 1)), 
       blue = Math.floor(Math.random() * (max + 1)),
@@ -112,49 +129,39 @@ function generateRandomColors() {
 
 function handleGameEffect (e) {
   let target = e.target;
-
   // When reset button is clicked
   if (target.classList.contains('reset')) {
     handleColorChange();
     target.textContent = 'New colors';
   }
 
-  if (target.classList.contains('easy')) {
-    handleEasyMode(target);   
-  }
-
-  if (target.classList.contains('hard')) {
-    handleHardMode(target);
+  if (target.classList.contains('mode')) {
+    handleMode(target);   
   }
 }
 
-function handleEasyMode (target) {
-  target.classList.add('active');
-  hard.classList.remove('active');
-  numBoxes = 3;
-  handleColorChange(); 
-  color = getRandomColor(numBoxes);
-  for(let i = 0; i < boxes.length; i++) {
-    if(!color[i]) {
-      boxes[i].style.display = 'none';
+function handleMode(target) {
+  for(let i = 0; i < gameMode.length; i++) {
+    gameMode[i].classList.remove('active');
+    target.classList.add('active');
+    // Number of boxes each mode contains
+    if(target.textContent === 'Easy') { 
+      numBoxes = 3;
+      numGuess = 2;
+    } else {
+      numBoxes = 6;
+      numGuess = 3;
     }
   }
-}
-
-function handleHardMode(target) {
-  easy.classList.remove('active');
-  target.classList.add('active');
-  numBoxes = 6;
   handleColorChange();
-  for(let i = 0; i < boxes.length; i++) {
-    boxes[i].style.display = 'block';
-  }
 }
 
 function handleColorChange() {
   // Remove message
   message.textContent = '';
-  //Generate random color for available number of boxes
+  // Number of guesses left
+  guessLeft = numGuess;
+  // Generate random color for available number of boxes
   color = getRandomColor(numBoxes); 
   // Pick color out of the generated colors
   guess = pickColor();
