@@ -57,7 +57,7 @@ function setColorChange(e) {
       gameOver(false, 'Try again!');
       handleLoss();
     } else {
-      showMessage(`You ${guessLeft} trials left`, 'red');
+      showMessage(`You have ${guessLeft} trials left`, 'red');
       target.style.backgroundColor = 'rgb(17, 18, 23)';
     }
   }
@@ -157,6 +157,7 @@ function handleMode(target) {
 }
 
 function handleColorChange() {
+  header.style.backgroundColor = 'rgb(61, 69, 111)';
   // Remove message
   message.textContent = '';
   // Number of guesses left

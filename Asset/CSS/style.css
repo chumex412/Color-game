@@ -86,7 +86,7 @@ body {
 /* Main style */
 
 header {
-  background-color: #3d456f;
+  background-color: rgb(61, 69, 111);
   color: #fff;
   font-weight: normal;
   padding: 1rem 0;
